@@ -7,6 +7,32 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+
+## Requisitos
+- Requisitos php 7.4.29
+- MariaDB 10.4.24
+- Composer (Usuarios Windows)
+
+## Instalacion del proyecto API incidencias
+- Clonar el repositorio.
+- Crear una copia del archivo **.env.example** y renombrarlo como **.env**
+- Abrir el archivo .env e ingresar el nombre de nuestra base de datos como se muestra a continuación
+
+DB_CONNECTION=mysql  
+DB_HOST=127.0.0.1  
+DB_PORT=3306  
+DB_DATABASE=db_incidencias
+DB_USERNAME=root  
+DB_PASSWORD=  
+
+- Crear en su servidor de mysql la base de datos con el mismo nombre que especifico anteriormente.
+- Abrir la carpeta del proyecto en la terminal de comandos (cmd) y ejecutar el comando **composer install**.
+- Proceda con la migracion de la base de datos usando el comando **php artisan migrate:install**.
+- Luego ejecute el comando php artisan migrate:refresh
+- Finalmente genere una clave para su aplicación con el comando **php artisan key:generate**
+- Ejecute su el comando **php artisan serve** para iniciar la aplicación
+- Usuario administrador **herrera_jh17@outlook.com** password **245jh17@**
+- Usuario estandar **mauricio@gmail.com** password **cesar123@**
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
