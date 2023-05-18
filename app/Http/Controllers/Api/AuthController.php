@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Validator;
 
 class AuthController extends Controller
 {
@@ -13,10 +14,27 @@ class AuthController extends Controller
      * Metodo para logearse en el sistema
      */
     public function login(Request $request){
+
+        $inputs = $request->all();
+
+        //validacion de entradas
+        $validator = Validator::make($inputs, [
+            'email'=>'required',
+            'password'=>'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                "status"=> false,
+                "errors"=>$validator->errors()
+            ];
+            return response()->json($response);
+        }
+
         if (!Auth::attempt($request->only('email', 'password')))
         {
             $response = ['message' => 'Acceso no autorizado!!'];
-            return response()->json($response, 401);
+            return response()->json($response);
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
