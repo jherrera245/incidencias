@@ -33,7 +33,10 @@ class AuthController extends Controller
 
         if (!Auth::attempt($request->only('email', 'password')))
         {
-            $response = ['message' => 'Acceso no autorizado!!'];
+            $response = [
+                'status'=>false,
+                'message' => 'Acceso no autorizado!!'
+            ];
             return response()->json($response);
         }
 
@@ -42,6 +45,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $response = [
+            "status"=>true,
             'message' => 'Bienvenido '.$user->name.', iniciaste sesión correctamente!!',
             'access_token' => $token, 
             'token_type' => 'Bearer', 
