@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -23,4 +24,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //rutas para incidencias
     Route::apiResource('/incidencias', IncidenciasController::class); 
+
+    Route::apiResource('/users', UsersController::class); 
 });
