@@ -39,6 +39,7 @@ class UsersController extends Controller
         $usuarios = DB::table('users as u')
         ->select('u.id', 'u.name','u.email', 'u.is_admin')
         ->where('u.name','LIKE', '%'.$query.'%')
+        ->where('u.status','=','1')
         ->orderBy('u.id','desc')
         ->paginate(7);
 
