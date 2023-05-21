@@ -33,7 +33,7 @@ class RetroalimentacionesController extends Controller
                 $retroalimentaciones =$this->listarPorUsuario($query);
 
                 $response = [
-                    "incidencias" => $retroalimentaciones,
+                    "retroalimentaciones" => $retroalimentaciones,
                     "searhText"=>$query
                 ];
                 return response()->json($response);
@@ -49,9 +49,8 @@ class RetroalimentacionesController extends Controller
         ->join('cargos as car', 'emp.id_cargo','=','car.id')
         ->join('departamentos as dep', 'emp.id_departamento','=','dep.id')
         ->select(
-            're.id', 'in.descripcion AS nombre_incidencia', 're.descripcion', 'emp.nombres', 'emp.apellidos', 
-            'car.nombre AS cargo', 'dep.nombre AS departamento',
-            're.fecha_resolucion AS fecha_resolucion','re.hora_resolucion AS hora_resolucion', 're.status', 're.created_at AS fecha'      
+            're.id', 'in.descripcion AS descripcionIncidencia', 're.descripcion AS retroalimentacion', 'emp.nombres', 'emp.apellidos', 
+            'car.nombre AS cargo', 'dep.nombre AS departamento', 're.status', 're.created_at AS fecha'
         )
         ->where(function($groupQuery) use ($query){
             $groupQuery->where('emp.nombres','LIKE', '%'.$query.'%')
@@ -75,9 +74,8 @@ class RetroalimentacionesController extends Controller
         ->join('cargos as car', 'emp.id_cargo','=','car.id')
         ->join('departamentos as dep', 'emp.id_departamento','=','dep.id')
         ->select(
-            're.id', 'in.descripcion AS nombre_incidencia', 're.descripcion', 'emp.nombres', 'emp.apellidos', 
-            'car.nombre AS cargo', 'dep.nombre AS departamento',
-            're.fecha_resolucion AS fecha_resolucion','re.hora_resolucion AS hora_resolucion', 're.status', 're.created_at AS fecha'      
+            're.id', 'in.descripcion AS descripcionIncidencia', 're.descripcion AS retroalimentacion', 'emp.nombres', 'emp.apellidos', 
+            'car.nombre AS cargo', 'dep.nombre AS departamento', 're.status', 're.created_at AS fecha'     
         )
         ->where(function($groupQuery) use ($query){
             $groupQuery->where('emp.nombres','LIKE', '%'.$query.'%')
@@ -85,7 +83,7 @@ class RetroalimentacionesController extends Controller
             ->orwhere('car.nombre','LIKE', '%'.$query.'%')
             ->orwhere('dep.nombre','LIKE', '%'.$query.'%');
         })
-        ->where('u.id','=',$user->id)
+        ->where('in.id_usuario','=',$user->id_empleado)
         ->where('re.status','=','1')
         ->orderBy('re.id','desc')
         ->paginate(7);

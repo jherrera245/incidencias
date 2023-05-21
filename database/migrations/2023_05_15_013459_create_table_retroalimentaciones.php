@@ -20,8 +20,6 @@ class CreateTableRetroalimentaciones extends Migration
             $table->foreignId('id_usuario_resolucion');
             $table->foreign('id_usuario_resolucion')->references('id')->on('users');
             $table->text('descripcion');
-            $table->date('fecha_resolucion');
-            $table->time('hora_resolucion');
             $table->boolean('status')->default(true);
             $table->timestamps();
         });
