@@ -91,4 +91,93 @@ class RetroalimentacionesController extends Controller
         return $retroalimentaciones;
     }
 
+    public function store(Request $request)
+    {
+        $user = auth()->user();
+        $inputs = $request->all();
+
+        //validacion de entradas
+        $validator = Validator::make($inputs, [
+            'id_incidencia'=>'required',
+            'descripcion'=>'required'
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                "status"=> false,
+                "errors"=>$validator->errors()
+            ];
+
+            return response()->json($response);
+        }
+
+        $retroalimentaciones = new Retroalimentaciones();
+        $retroalimentaciones->id_incidencia = $request->get('id_incidencia');
+        $retroalimentaciones->id_usuario_resolucion = $user->id;
+        $retroalimentaciones->descripcion = $request->get('descripcion');
+
+        $retroalimentaciones->save();
+
+        $response = [
+            "status"=>true,
+            "message"=>"Datos insertados correctamente",
+            'data' => $retroalimentaciones
+        ];
+
+        return response()->json($response);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = auth()->user();
+        $inputs = $request->all();
+
+        //validacion de entradas
+        $validator = Validator::make($inputs, [
+            'id_incidencia'=>'required',
+            'descripcion'=>'required'
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                "status"=> false,
+                "errors"=>$validator->errors()
+            ];
+
+            return response()->json($response);
+        }
+        
+        $retroalimentaciones = Retroalimentaciones::find($id);
+        $retroalimentaciones->id_incidencia = $request->get('id_incidencia');
+        $retroalimentaciones->id_usuario_resolucion = $user->id;
+        $retroalimentaciones->descripcion = $request->get('descripcion');
+
+        
+        $retroalimentaciones->update();
+
+        $response = [
+            "status"=>true,
+            "message"=>"Datos actualizados correctamente",
+            'data' => $retroalimentaciones
+        ];
+
+        return response()->json($response);
+    }
+
+    public function destroy($id)
+    {
+        $retroalimentaciones = Retroalimentaciones::find($id);
+        $retroalimentaciones->status = false;
+
+        $retroalimentaciones->update();
+
+        $response = [
+            "status"=> true,
+            "data"=>$retroalimentaciones,
+            "message"=>"El registro fue eliminado correctamente"
+        ];
+
+        return response()->json($response);
+    }
+
 }
