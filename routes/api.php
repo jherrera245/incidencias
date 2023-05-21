@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\RetroalimentacionesController;
 use App\Http\Controllers\Api\UsersController;
+use App\Models\Retroalimentaciones;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -26,4 +28,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('/incidencias', IncidenciasController::class); 
 
     Route::apiResource('/users', UsersController::class); 
+
+    Route::apiResource('/retroalimentaciones', RetroalimentacionesController::class); 
 });
