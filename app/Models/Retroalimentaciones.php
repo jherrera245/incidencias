@@ -9,7 +9,7 @@ class Retroalimentaciones extends Model
 {
     use HasFactory;
 
-    protected $table = 'incidencias';
+    protected $table = 'retroalimentaciones';
 
     //columnas
     protected $fillable = [
@@ -17,8 +17,6 @@ class Retroalimentaciones extends Model
         'id_incidencia',
         'id_usuario_resolucion',
         'descripcion',
-        'fecha_resolucion',
-        'hora_resolucion',
         'status',
     ];
 }
