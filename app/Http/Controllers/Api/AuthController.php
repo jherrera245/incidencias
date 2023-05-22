@@ -62,8 +62,10 @@ class AuthController extends Controller
     {
         auth()->user()->tokens()->delete();
 
-        return [
-            'message' => 'Su sessión fue finalizada correctamente!!'
+        $response = [
+            'message' => 'Su sesión fue finalizada correctamente!!'
         ];
+
+        return response()->json($response);
     }
 }

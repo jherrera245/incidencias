@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use File;
 use DB;
 use Validator;
+use Illuminate\Support\Str;
 
 class IncidenciasController extends Controller
 {
@@ -106,6 +107,24 @@ class IncidenciasController extends Controller
     }
 
     /**
+     * Metodo para obtener la lista de los tipos de incidencias
+     */
+    public function listaTiposIncidencias(){
+        $tipos = DB::table('tipos_incidencias as tipo')
+        ->select('tipo.id', 'tipo.nombre')
+        ->where('tipo.status', '=', '1')
+        ->get();
+
+        $response = [
+            "status"=>true,
+            "tipos"=>$tipos
+        ];
+
+        return response()->json($response);
+    }
+
+
+    /**
      * Metodo para registrar una incidencia en la base de datos
      * Verbo HTTP POST
     */
@@ -136,14 +155,23 @@ class IncidenciasController extends Controller
         $incidencia->id_usuario = $user->id;
 
         //guadar imagen
-        if ($request->hasFile('imagen')) {
-            $url = $request->file('imagen');
-            $nombre = str_replace(' ', '-', trim($request->get('imagen')));
-            $nombre = hash('sha256', $nombre.date('Y-m-d H:i:s')); //ciframos el nombre
-            $file = $nombre.".".$url->guessExtension();
-            //guardamos el archivo en el servidor
-            Storage::disk('incidencias')->put($file, File::get($url));
+        if($request->get("encode")) {
+            $base64_image = $request->input('imagen');
+            @list($type, $file_data) = explode(';', $base64_image);
+            @list(, $file_data) = explode(',', $file_data); 
+            $file = hash('sha256', Str::random(10).date('Y-m-d H:i:s')).".jpg"; //ciframos el nombre
+            Storage::disk('incidencias')->put($file, base64_decode($file_data));
             $incidencia->imagen = $file;
+        }else {
+            if ($request->hasFile('imagen')) {
+                $url = $request->file('imagen');
+                $nombre = str_replace(' ', '-', trim($request->get('imagen')));
+                $nombre = hash('sha256', $nombre.date('Y-m-d H:i:s')); //ciframos el nombre
+                $file = $nombre.".".$url->guessExtension();
+                //guardamos el archivo en el servidor
+                Storage::disk('incidencias')->put($file, File::get($url));
+                $incidencia->imagen = $file;
+            }
         }
 
         $incidencia->save();
@@ -187,17 +215,27 @@ class IncidenciasController extends Controller
         $incidencia->id_tipo_incidencia = $request->get('tipo');
         $incidencia->descripcion = $request->get('descripcion');
         $incidencia->id_usuario = $user->id;
-        
+
         //guadar imagen
-        if ($request->hasFile('imagen')) {
-            $url = $request->file('imagen');
+        if($request->get("encode")) {
+            $base64_image = $request->input('imagen');
             Storage::disk('incidencias')->delete($oldImage); //borrar imagen anterior
-            $nombre = str_replace(' ', '-', trim($request->get('imagen')));
-            $nombre = hash('sha256', $nombre.date('Y-m-d H:i:s')); //ciframos el nombre
-            $file = $nombre.".".$url->guessExtension();
-            //guardamos el archivo en el servidor
-            Storage::disk('incidencias')->put($file, File::get($url));
+            @list($type, $file_data) = explode(';', $base64_image);
+            @list(, $file_data) = explode(',', $file_data); 
+            $file = hash('sha256', Str::random(10).date('Y-m-d H:i:s')).".jpg"; //ciframos el nombre
+            Storage::disk('incidencias')->put($file, base64_decode($file_data));
             $incidencia->imagen = $file;
+        }else {
+            if ($request->hasFile('imagen')) {
+                $url = $request->file('imagen');
+                Storage::disk('incidencias')->delete($oldImage); //borrar imagen anterior
+                $nombre = str_replace(' ', '-', trim($request->get('imagen')));
+                $nombre = hash('sha256', $nombre.date('Y-m-d H:i:s')); //ciframos el nombre
+                $file = $nombre.".".$url->guessExtension();
+                //guardamos el archivo en el servidor
+                Storage::disk('incidencias')->put($file, File::get($url));
+                $incidencia->imagen = $file;
+            }
         }
         
         $incidencia->update();

@@ -30,4 +30,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('/users', UsersController::class); 
 
     Route::apiResource('/retroalimentaciones', RetroalimentacionesController::class); 
+
+    //lista tipos de incidencias
+    Route::get('/tipos-incidencias', function(Request $request) {
+        return IncidenciasController::listaTiposIncidencias();
+    });
 });
