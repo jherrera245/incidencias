@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Retroalimentaciones;
+use App\Models\Incidencias;
 use Illuminate\Http\Request;
 use DB;
 use Validator;
@@ -91,38 +92,70 @@ class RetroalimentacionesController extends Controller
         return $retroalimentaciones;
     }
 
+    //funcion para cambiar el estado de una incidencia
+    private function changeStatusIncidencia(Request $request) {
+        $incidencia = Incidencias::find($request->get('id_incidencia'));
+        $incidencia->status_resolucion = $request->get('status');
+        $incidencia->update();
+    }
+
+    //validaciones para entradas de datos
+    private function validatorInputs($inputs) {
+        $validator = Validator::make($inputs, [
+            'id_incidencia'=>'required',
+            'descripcion'=>'required',
+            'status'=>'required',
+        ]);
+
+        return $validator;
+    }
+
     public function store(Request $request)
     {
+
         $user = auth()->user();
         $inputs = $request->all();
 
-        //validacion de entradas
-        $validator = Validator::make($inputs, [
-            'id_incidencia'=>'required',
-            'descripcion'=>'required'
-        ]);
+        try {
+            DB::beginTransaction();
 
-        if ($validator->fails()) {
+            //validacion de entradas
+            $validator = $this->validatorInputs($inputs);
+
+            if ($validator->fails()) {
+                $response = [
+                    "status"=> false,
+                    "errors"=>$validator->errors()
+                ];
+
+                return response()->json($response);
+            }
+
+            //se almacena la retroalimentacion
+            $retroalimentaciones = new Retroalimentaciones();
+            $retroalimentaciones->id_incidencia = $request->get('id_incidencia');
+            $retroalimentaciones->id_usuario_resolucion = $user->id;
+            $retroalimentaciones->descripcion = $request->get('descripcion');    
+            $retroalimentaciones->save();
+
+            //buscamos la incidencia y actualizamos su estado de resolucion
+            $this->changeStatusIncidencia($request);
+
             $response = [
-                "status"=> false,
-                "errors"=>$validator->errors()
+                "status"=>true,
+                "message"=>"Datos insertados correctamente",
+                'data' => $retroalimentaciones
             ];
 
-            return response()->json($response);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            $response = [
+                "status"=>true,
+                "message"=>"Error al insertar intenta de nuevo",
+            ];
         }
-
-        $retroalimentaciones = new Retroalimentaciones();
-        $retroalimentaciones->id_incidencia = $request->get('id_incidencia');
-        $retroalimentaciones->id_usuario_resolucion = $user->id;
-        $retroalimentaciones->descripcion = $request->get('descripcion');
-
-        $retroalimentaciones->save();
-
-        $response = [
-            "status"=>true,
-            "message"=>"Datos insertados correctamente",
-            'data' => $retroalimentaciones
-        ];
 
         return response()->json($response);
     }
@@ -132,37 +165,50 @@ class RetroalimentacionesController extends Controller
         $user = auth()->user();
         $inputs = $request->all();
 
-        //validacion de entradas
-        $validator = Validator::make($inputs, [
-            'id_incidencia'=>'required',
-            'descripcion'=>'required'
-        ]);
+        try {
+            DB::beginTransaction();
 
-        if ($validator->fails()) {
+            //validacion de entradas
+            $validator = $this->validatorInputs($inputs);
+
+            if ($validator->fails()) {
+                $response = [
+                    "status"=> false,
+                    "errors"=>$validator->errors()
+                ];
+
+                return response()->json($response);
+            }
+
+            //se almacena la retroalimentacion
+            $retroalimentaciones = Retroalimentaciones::find($id);
+            $retroalimentaciones->id_incidencia = $request->get('id_incidencia');
+            $retroalimentaciones->id_usuario_resolucion = $user->id;
+            $retroalimentaciones->descripcion = $request->get('descripcion');    
+            $retroalimentaciones->update();
+
+            //buscamos la incidencia y actualizamos su estado de resolucion
+            $this->changeStatusIncidencia($request);
+
             $response = [
-                "status"=> false,
-                "errors"=>$validator->errors()
+                "status"=>true,
+                "message"=>"Datos actualizados correctamente",
+                'data' => $retroalimentaciones
             ];
 
-            return response()->json($response);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            $response = [
+                "status"=>true,
+                "message"=>"Error al actualizar intenta de nuevo",
+            ];
         }
-        
-        $retroalimentaciones = Retroalimentaciones::find($id);
-        $retroalimentaciones->id_incidencia = $request->get('id_incidencia');
-        $retroalimentaciones->id_usuario_resolucion = $user->id;
-        $retroalimentaciones->descripcion = $request->get('descripcion');
-
-        
-        $retroalimentaciones->update();
-
-        $response = [
-            "status"=>true,
-            "message"=>"Datos actualizados correctamente",
-            'data' => $retroalimentaciones
-        ];
 
         return response()->json($response);
     }
+
 
     public function destroy($id)
     {

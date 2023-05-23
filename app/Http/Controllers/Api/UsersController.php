@@ -47,15 +47,23 @@ class UsersController extends Controller
         return $usuarios;
     }
 
-    public function store(Request $request)
-    {
-        $inputs = $request->all();
-
+    //validaciones para entradas de datos
+    private function validatorInputs($inputs) {
         $validator = Validator::make($inputs, [
+            'id_empleado' => 'required',
             'name'=>'required',
             'email'=>'required',
             'password'=>'required'
         ]);
+
+        return $validator;
+    }
+
+    public function store(Request $request)
+    {
+        $inputs = $request->all();
+
+        $validator = $this->validatorInputs($inputs);
 
         if ($validator->fails()) {
             $response = [
@@ -66,10 +74,10 @@ class UsersController extends Controller
             return response()->json($response);
         }
         $usuario = new User();
+        $usuario->id_empleado=$request->get('id_empleado');
         $usuario->name=$request->get('name');
         $usuario->email=$request->get('email');
         $usuario->password=Hash::make($request->get('password'));
-        $usuario->id_empleado=$request->get('id_empleado');
         $usuario->is_admin=($request->get('admin') == 1) ? 1 : 0;
 
         $usuario->save();
@@ -87,11 +95,7 @@ class UsersController extends Controller
         $inputs = $request->all();
 
         //validacion de entradas
-        $validator = Validator::make($inputs, [
-            'name'=>'required',
-            'email'=>'required',
-            'password'=>'required'
-        ]);
+        $validator = $this->validatorInputs($inputs);
 
         if ($validator->fails()) {
             $response = [
@@ -103,10 +107,10 @@ class UsersController extends Controller
         }
 
         $user = User::find($id);
+        $user->id_empleado=$request->get('id_empleado');
         $user->name=$request->get('name');
         $user->email=$request->get('email');
         $user->password=Hash::make($request->get('password'));
-        $user->id_empleado=$request->get('id_empleado');
         $user->is_admin=($request->get('admin') == 1) ? 1 : 0;
         
         $user->update();
@@ -124,7 +128,6 @@ class UsersController extends Controller
     {
         $user = User::find($id);
         $user->status = false;
-
         $user->update();
 
         $response = [

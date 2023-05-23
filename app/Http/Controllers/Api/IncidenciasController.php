@@ -123,6 +123,17 @@ class IncidenciasController extends Controller
         return response()->json($response);
     }
 
+    //validaciones para entradas de datos
+    private function validatorInputs($inputs) {
+        $validator = Validator::make($inputs, [
+            'tipo'=>'required|integer',
+            'descripcion'=>'required',
+            'imagen'=>'required'
+        ]);
+
+        return $validator;
+    }
+
 
     /**
      * Metodo para registrar una incidencia en la base de datos
@@ -134,11 +145,7 @@ class IncidenciasController extends Controller
         $inputs = $request->all();
 
         //validacion de entradas
-        $validator = Validator::make($inputs, [
-            'tipo'=>'required|integer',
-            'descripcion'=>'required',
-            'imagen'=>'required'
-        ]);
+        $validator = $this->validatorInputs($inputs);
 
         if ($validator->fails()) {
             $response = [
@@ -195,12 +202,8 @@ class IncidenciasController extends Controller
         $inputs = $request->all();
 
         //validacion de entradas
-        $validator = Validator::make($inputs, [
-            'tipo'=>'required|integer',
-            'descripcion'=>'required',
-            'imagen'=>'required'
-        ]);
-
+        $validator = $this->validatorInputs($inputs);
+        
         if ($validator->fails()) {
             $response = [
                 "status"=> false,
