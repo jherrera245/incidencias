@@ -83,6 +83,9 @@ class AuthController extends Controller
         $response = [
             "status"=>true,
             'message' => 'Bienvenido '.$user->name.', iniciaste sesión correctamente!!',
+            'name' =>$user->name,
+            'email'=>$user->email,
+            'rol'=>$user->is_admin,
             'access_token' => $token, 
             'token_type' => 'Bearer', 
         ];

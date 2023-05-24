@@ -11,6 +11,7 @@ use File;
 use DB;
 use Validator;
 use Illuminate\Support\Str;
+use App\Services\FCMServices;
 
 class IncidenciasController extends Controller
 {
@@ -134,6 +135,29 @@ class IncidenciasController extends Controller
         return $validator;
     }
 
+    //metodo para el envio de notificaciones notifica a todos los administradores
+    public function sendNotification(Request $request)
+    {
+        $topic = "reporte-incidencia";
+        $id = $request->get('id');
+        $incidencia = Incidencias::find($id);
+
+        if($incidencia) {
+            $fecha = date('d-m-Y', strtotime($incidencia->created_at));
+            $body = "Incidencia reportada el {$fecha} fue procesada.\nDescripción: {$incidencia->descripcion}";
+            
+            $notification = [
+                'body' => $body,
+                'title' => 'Se reporto una incidencia!!'
+            ];
+    
+            return FCMServices::sendNotificationByTopic($topic, $notification);
+        }
+
+        return response()->json(
+            ['message'=>'No se pudo enviar la notificacion']
+        );
+    }
 
     /**
      * Metodo para registrar una incidencia en la base de datos
@@ -183,10 +207,14 @@ class IncidenciasController extends Controller
 
         $incidencia->save();
 
+        // $this->sendNotificationrToUser();
+        $notification = $this->sendNotification();
+
         $response = [
             "status"=>true,
             "message"=>"Datos insertados correctamente",
-            'data' => $incidencia
+            'data' => $incidencia,
+            'notification'=>$notification
         ];
 
         return response()->json($response);

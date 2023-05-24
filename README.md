@@ -12,6 +12,7 @@
 - Requisitos php 7.4.29
 - MariaDB 10.4.24
 - Composer (Usuarios Windows)
+- Descomentar la linea extension=sodium en php.ini
 
 ## Instalacion del proyecto API incidencias
 - Clonar el repositorio.
@@ -33,6 +34,12 @@ DB_PASSWORD=
 - Ejecute su el comando **php artisan serve** para iniciar la aplicación
 - Usuario administrador **herrera_jh17@outlook.com** password **245jh17@**
 - Usuario estandar **mauricio@gmail.com** password **cesar123@**
+
+## Importante
+Para hacer uso de las notificaciones de firebase modifique:  
+- vendor\guzzlehttp\guzzle\src\Handler\CurlFactory.php (CurlFactori.php apartir de la linea 359)  
+- Cambie **$conf[\CURLOPT_SSL_VERIFYHOST] = 2;** y **$conf[\CURLOPT_SSL_VERIFYPEER] = true;**  
+- A  **$conf[\CURLOPT_SSL_VERIFYHOST] = 0;** y **$conf[\CURLOPT_SSL_VERIFYPEER] = false;**
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

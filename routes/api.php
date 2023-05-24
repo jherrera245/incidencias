@@ -32,7 +32,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('/retroalimentaciones', RetroalimentacionesController::class); 
 
     //lista tipos de incidencias
-    Route::get('/tipos-incidencias', function(Request $request) {
+    Route::get('/tipos-incidencias', function() {
         return IncidenciasController::listaTiposIncidencias();
+    });
+
+    Route::post('/notificacion-incidencia', function(Request $request) {
+        return IncidenciasController::sendNotification($request);
+    });
+
+    Route::post('/notificacion-resolucion', function(Request $request) {
+        return RetroalimentacionesController::sendNotification($request);
     });
 });

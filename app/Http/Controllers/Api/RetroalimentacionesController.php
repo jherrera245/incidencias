@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Retroalimentaciones;
 use App\Models\Incidencias;
+use App\Models\TokensUsers;
 use Illuminate\Http\Request;
 use DB;
 use Validator;
+use App\Services\FCMServices;
 
 class RetroalimentacionesController extends Controller
 {
@@ -90,6 +92,43 @@ class RetroalimentacionesController extends Controller
         ->paginate(7);
 
         return $retroalimentaciones;
+    }
+
+    //metodo para el envio de notificaciones notifica a todos los administradores
+    public function sendNotification(Request $request)
+    {
+        $id = $request->get('id');
+        $retroalimentacion = Retroalimentaciones::find($id);
+
+        if ($retroalimentacion) {
+            
+            $incidencia = Incidencias::find($retroalimentacion->id_incidencia);
+
+            //buscamos el ultimo token de usuario registrado
+            $tokenUser = TokensUsers::where('id_usuario', $incidencia->id_usuario)->latest('created_at')->first();
+
+            if ($tokenUser) {
+
+                $token = $tokenUser->token;
+                $fecha = date('d-m-Y', strtotime($incidencia->created_at));
+                $body = "Su incidencia reportada el {$fecha} fue procesada.\nDescripción: {$retroalimentacion->descripcion}";
+                
+                $notification = [
+                    'body' => $body,
+                    'title' => 'Retroalimentación'
+                ];
+
+                return FCMServices::sendNotificationByToken($token, $notification);
+            }
+
+            return response()->json(
+                ['message'=>'El usuario no tiene un token valido']
+            );
+        }else {     
+            return response()->json(
+                ['message'=>'No se pudo enviar la notificacion']
+            );
+        }
     }
 
     //funcion para cambiar el estado de una incidencia
