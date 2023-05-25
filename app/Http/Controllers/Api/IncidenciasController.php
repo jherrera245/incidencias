@@ -206,9 +206,6 @@ class IncidenciasController extends Controller
 
         $incidencia->save();
 
-        // $this->sendNotificationrToUser();
-        $notification = $this->sendNotification();
-
         $response = [
             "status"=>true,
             "message"=>"Datos insertados correctamente",
