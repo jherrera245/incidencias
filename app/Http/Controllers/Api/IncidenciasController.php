@@ -211,7 +211,6 @@ class IncidenciasController extends Controller
             "status"=>true,
             "message"=>"Datos insertados correctamente",
             'data' => $incidencia,
-            'notification'=>$notification
         ];
 
         return response()->json($response);
