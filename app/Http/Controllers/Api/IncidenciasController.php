@@ -165,7 +165,6 @@ class IncidenciasController extends Controller
     */
     public function store(Request $request)
     {
-        $user = auth()->user();
         $inputs = $request->all();
 
         //validacion de entradas
