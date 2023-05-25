@@ -245,7 +245,6 @@ class IncidenciasController extends Controller
         $oldImage = $incidencia->imagen;
         $incidencia->id_tipo_incidencia = $request->get('tipo');
         $incidencia->descripcion = $request->get('descripcion');
-        $incidencia->id_usuario = $user->id;
 
         //guadar imagen
         if($request->get("encode")) {
