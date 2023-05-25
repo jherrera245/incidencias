@@ -165,6 +165,7 @@ class IncidenciasController extends Controller
     */
     public function store(Request $request)
     {
+        $user = auth()->user();
         $inputs = $request->all();
 
         //validacion de entradas
@@ -222,7 +223,6 @@ class IncidenciasController extends Controller
     */
     public function update(Request $request, $id)
     {
-        $user = auth()->user();
         $inputs = $request->all();
 
         //validacion de entradas
