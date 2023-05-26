@@ -31,6 +31,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::apiResource('/retroalimentaciones', RetroalimentacionesController::class); 
 
+    //obtener datos por id
+    Route::get('/get-incidencia', function (Request $request) {
+        return IncidenciasController::getById($request);
+    });
+
     //lista tipos de incidencias
     Route::get('/tipos-incidencias', function() {
         return IncidenciasController::listaTiposIncidencias();

@@ -217,6 +217,31 @@ class IncidenciasController extends Controller
     }
 
     /**
+     * Metodo para obtener incidencia por id
+     */
+    public function getById(Request $request) {
+        if ($request->get('id')) {
+            $id = $request->get('id');
+            $incidencia = Incidencias::find($id);
+
+            $file = Storage::disk('incidencias')->get($incidencia->imagen);
+
+            $base64 = "data:image/png;base64,".base64_encode($file);
+
+            return response()->json([
+                "data" => $incidencia,
+                "imagenBase64" => $base64
+            ]);
+        }
+        
+        return response()->json([
+            "error" => "No se encontro el registro"
+        ]);
+    }
+
+
+
+    /**
      * Metodo para registrar una incidencia en la base de datos
      * Verbo HTTP POST
     */
