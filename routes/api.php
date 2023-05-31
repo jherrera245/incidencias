@@ -36,9 +36,24 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         return IncidenciasController::getById($request);
     });
 
+    //obtener datos por id
+    Route::get('/get-retroalimentacion', function (Request $request) {
+        return RetroalimentacionesController::getById($request);
+    });
+
+    //obtener datos por id
+    Route::get('/get-user', function (Request $request) {
+        return UsersController::getById($request);
+    });
+
     //lista tipos de incidencias
     Route::get('/tipos-incidencias', function() {
         return IncidenciasController::listaTiposIncidencias();
+    });
+
+    //lista empleados
+    Route::get('/empleados', function() {
+        return UsersController::listaEmpleados();
     });
 
     Route::post('/notificacion-incidencia', function(Request $request) {

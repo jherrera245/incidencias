@@ -38,13 +38,37 @@ class UsersController extends Controller
     public function listarUsuarios($query)
     {
         $usuarios = DB::table('users as u')
-        ->select('u.id', 'u.name','u.email', 'u.is_admin')
+        ->join('empleados as emp', 'u.id_empleado', '=', 'emp.id')
+        ->select('u.id', 'u.name','u.email','emp.nombres', 'emp.apellidos', 'u.is_admin')
         ->where('u.name','LIKE', '%'.$query.'%')
+        ->where(function($groupQuery) use ($query){
+            $groupQuery->where('emp.nombres','LIKE', '%'.$query.'%')
+            ->orwhere('emp.apellidos', 'LIKE', '%'.$query.'%')
+            ->orwhere('u.name','LIKE', '%'.$query.'%')
+            ->orwhere('u.email', 'LIKE', '%'.$query.'%');
+        })
         ->where('u.status','=','1')
         ->orderBy('u.id','desc')
         ->paginate(7);
 
         return $usuarios;
+    }
+
+    /**
+     * Metodo para obtener la empleados de los tipos de incidencias
+    */
+    public function listaEmpleados(){
+        $empleados = DB::table('empleados as emp')
+        ->select('emp.id', 'emp.nombres', 'emp.apellidos')
+        ->where('emp.status', '=', '1')
+        ->get();
+
+        $response = [
+            "status"=>true,
+            "empleados"=>$empleados
+        ];
+
+        return response()->json($response);
     }
 
     //validaciones para entradas de datos
@@ -89,6 +113,23 @@ class UsersController extends Controller
         ];
         return response()->json($response);
     }
+
+    /**
+     * Metodo para obtener un registro por id
+     */
+    public function getById(Request $request) {
+        if ($request->get('id')) {
+            $id = $request->get('id');
+            $user = Users::find($id);
+
+            return response()->json($user);
+        }
+        
+        return response()->json([
+            "error" => "No se encontro el registro"
+        ]);
+    }
+
 
     public function update(Request $request, $id)
     {

@@ -47,18 +47,22 @@ class RetroalimentacionesController extends Controller
     private function listarTodos($query = null){
         $retroalimentaciones = DB::table('retroalimentaciones AS re')
         ->join('incidencias AS in', 're.id_incidencia', '=', 'in.id')
+        ->join('tipos_incidencias AS tipo', 'in.id_tipo_incidencia', '=', 'tipo.id')
         ->join('users AS u', 're.id_usuario_resolucion', '=', 'u.id')
         ->join('empleados as emp', 'u.id_empleado', '=', 'emp.id')
         ->join('cargos as car', 'emp.id_cargo','=','car.id')
         ->join('departamentos as dep', 'emp.id_departamento','=','dep.id')
         ->select(
-            're.id', 'in.descripcion AS descripcionIncidencia', 're.descripcion AS retroalimentacion', 'emp.nombres', 'emp.apellidos', 
-            'car.nombre AS cargo', 'dep.nombre AS departamento', 're.status', 're.created_at AS fecha'
+            're.id', 'in.id AS idIncidencia','in.descripcion AS descripcionIncidencia', 
+            'in.status_resolucion AS estadoIncidencia', 'tipo.nombre AS tipo', 'emp.nombres', 'emp.apellidos', 
+            're.descripcion AS retroalimentacion', 'emp.nombres', 'emp.apellidos', 'car.nombre AS cargo', 
+            'dep.nombre AS departamento', 're.status', 're.created_at AS fecha'
         )
         ->where(function($groupQuery) use ($query){
             $groupQuery->where('emp.nombres','LIKE', '%'.$query.'%')
             ->orwhere('emp.apellidos', 'LIKE', '%'.$query.'%')
             ->orwhere('car.nombre','LIKE', '%'.$query.'%')
+            ->orwhere('tipo.nombre', 'LIKE', '%'.$query.'%')
             ->orwhere('dep.nombre','LIKE', '%'.$query.'%');
         })
         ->where('re.status','=','1')
@@ -72,18 +76,22 @@ class RetroalimentacionesController extends Controller
         $user = auth()->user();
         $retroalimentaciones = DB::table('retroalimentaciones AS re')
         ->join('incidencias AS in', 're.id_incidencia', '=', 'in.id')
+        ->join('tipos_incidencias AS tipo', 'in.id_tipo_incidencia', '=', 'tipo.id')
         ->join('users AS u', 're.id_usuario_resolucion', '=', 'u.id')
         ->join('empleados as emp', 'u.id_empleado', '=', 'emp.id')
         ->join('cargos as car', 'emp.id_cargo','=','car.id')
         ->join('departamentos as dep', 'emp.id_departamento','=','dep.id')
         ->select(
-            're.id', 'in.descripcion AS descripcionIncidencia', 're.descripcion AS retroalimentacion', 'emp.nombres', 'emp.apellidos', 
-            'car.nombre AS cargo', 'dep.nombre AS departamento', 're.status', 're.created_at AS fecha'     
+            're.id', 'in.id AS idIncidencia','in.descripcion AS descripcionIncidencia', 
+            'in.status_resolucion AS estadoIncidencia', 'tipo.nombre AS tipo', 'emp.nombres', 'emp.apellidos', 
+            're.descripcion AS retroalimentacion', 'emp.nombres', 'emp.apellidos', 'car.nombre AS cargo', 
+            'dep.nombre AS departamento', 're.status', 're.created_at AS fecha'
         )
         ->where(function($groupQuery) use ($query){
             $groupQuery->where('emp.nombres','LIKE', '%'.$query.'%')
             ->orwhere('emp.apellidos', 'LIKE', '%'.$query.'%')
             ->orwhere('car.nombre','LIKE', '%'.$query.'%')
+            ->orwhere('tipo.nombre', 'LIKE', '%'.$query.'%')
             ->orwhere('dep.nombre','LIKE', '%'.$query.'%');
         })
         ->where('in.id_usuario','=',$user->id_empleado)
@@ -197,6 +205,22 @@ class RetroalimentacionesController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    /**
+     * Metodo para obtener retroalimentacion por id
+     */
+    public function getById(Request $request) {
+        if ($request->get('id')) {
+            $id = $request->get('id');
+            $retroalimentacion = Retroalimentaciones::find($id);
+
+            return response()->json($retroalimentacion);
+        }
+        
+        return response()->json([
+            "error" => "No se encontro el registro"
+        ]);
     }
 
     public function update(Request $request, $id)

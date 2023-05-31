@@ -68,6 +68,7 @@ class IncidenciasController extends Controller
             $groupQuery->where('emp.nombres','LIKE', '%'.$query.'%')
             ->orwhere('emp.apellidos', 'LIKE', '%'.$query.'%')
             ->orwhere('car.nombre','LIKE', '%'.$query.'%')
+            ->orwhere('tipo.nombre', 'LIKE', '%'.$query.'%')
             ->orwhere('dep.nombre','LIKE', '%'.$query.'%');
         })
         ->where('in.status','=','1')
@@ -97,6 +98,7 @@ class IncidenciasController extends Controller
             $groupQuery->where('emp.nombres','LIKE', '%'.$query.'%')
             ->orwhere('emp.apellidos', 'LIKE', '%'.$query.'%')
             ->orwhere('car.nombre','LIKE', '%'.$query.'%')
+            ->orwhere('tipo.nombre', 'LIKE', '%'.$query.'%')
             ->orwhere('dep.nombre','LIKE', '%'.$query.'%');
         })
         ->where('u.id','=',$user->id)
@@ -217,7 +219,7 @@ class IncidenciasController extends Controller
     }
 
     /**
-     * Metodo para obtener incidencia por id
+     * Metodo para obtener registro por id
      */
     public function getById(Request $request) {
         if ($request->get('id')) {
@@ -238,8 +240,6 @@ class IncidenciasController extends Controller
             "error" => "No se encontro el registro"
         ]);
     }
-
-
 
     /**
      * Metodo para registrar una incidencia en la base de datos
