@@ -120,7 +120,7 @@ class UsersController extends Controller
     public function getById(Request $request) {
         if ($request->get('id')) {
             $id = $request->get('id');
-            $user = Users::find($id);
+            $user = User::find($id);
 
             return response()->json($user);
         }
