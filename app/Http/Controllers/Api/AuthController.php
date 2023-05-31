@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\TokensUsers;
 use Validator;
+use DB;
 
 class AuthController extends Controller
 {
@@ -37,6 +38,25 @@ class AuthController extends Controller
             }
         }
     }
+
+    /**
+     * Obtener perfil del usuario
+    */
+    public function profile() {
+        $user = auth()->user();
+        $response = DB::table('empleados AS emp')
+        ->join('users AS u', 'emp.id', '=', 'u.id_empleado')
+        ->join('cargos as car', 'emp.id_cargo','=','car.id')
+        ->join('departamentos as dep', 'emp.id_departamento','=','dep.id')
+        ->select(
+            'u.name', 'u.email', 'emp.nombres', 'emp.apellidos', 'car.nombre AS cargo', 'dep.nombre as departamento'
+        )
+        ->where('emp.id', '=', $user->id_empleado)
+        ->first();
+
+        return response()->json($response);
+    }
+
 
     /**
      * Metodo para logearse en el sistema

@@ -39,7 +39,7 @@ class UsersController extends Controller
     {
         $usuarios = DB::table('users as u')
         ->join('empleados as emp', 'u.id_empleado', '=', 'emp.id')
-        ->select('u.id', 'u.name','u.email','emp.nombres', 'emp.apellidos', 'u.is_admin')
+        ->select('u.id', 'u.name','u.email', 'emp.id AS idEmpleado', 'emp.nombres', 'emp.apellidos', 'u.is_admin')
         ->where('u.name','LIKE', '%'.$query.'%')
         ->where(function($groupQuery) use ($query){
             $groupQuery->where('emp.nombres','LIKE', '%'.$query.'%')

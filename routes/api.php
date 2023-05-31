@@ -17,8 +17,9 @@ Route::post('/login', [AuthController::class, 'login']);
 
 //Rutas protegidas
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    
     Route::get('/profile', function(Request $request) {
-        return auth()->user();
+        return AuthController::profile();
     });
 
     // API route for logout user
