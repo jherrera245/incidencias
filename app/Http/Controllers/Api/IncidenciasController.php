@@ -146,7 +146,7 @@ class IncidenciasController extends Controller
 
         if($incidencia) {
             $fecha = date('d-m-Y', strtotime($incidencia->created_at));
-            $body = "Incidencia reportada el {$fecha} fue procesada.\nDescripción: {$incidencia->descripcion}";
+            $body = "Incidencia reportada el {$fecha}.\nDescripción: {$incidencia->descripcion}";
             
             $notification = [
                 'body' => $body,
