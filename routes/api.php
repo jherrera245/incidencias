@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\IncidenciasController;
+use App\Http\Controllers\Api\ReporteController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -31,6 +32,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('/users', UsersController::class); 
 
     Route::apiResource('/retroalimentaciones', RetroalimentacionesController::class); 
+
+    //repostes
+    Route::get('/reports-all', function (Request $request) {
+        return ReporteController::reportAll($request);
+    });
+
+    Route::get('/reports-by-id', function (Request $request) {
+        return ReporteController::reportById($request);
+    });
 
     //obtener datos por id
     Route::get('/get-incidencia', function (Request $request) {
